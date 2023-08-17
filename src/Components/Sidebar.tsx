@@ -31,7 +31,7 @@ const Sidebar = () => {
                     <Link to={'/book/remove'}>Remove Book</Link>
                   </li>
                   <li>
-                    <Link to={'/book/all'}>Library Book</Link>
+                    <Link to={'/book/manage'}>Library Book</Link>
                   </li>
                 </ul>
               </details>
@@ -40,8 +40,9 @@ const Sidebar = () => {
               <details>
                 <summary><FaUsersGear />User Section</summary>
                 <ul>
-                  <li><a>Add User</a></li>
-                  <li><a>Delete User</a></li>
+                  <li>
+                    <Link target="_blank" to={`https://console.firebase.google.com/u/2/project/library-react-35bcb/authentication/users?hl=id`}>Manage User</Link>
+                  </li>
                 </ul>
               </details>
 

@@ -8,8 +8,10 @@ import { AdminContextProvider } from './context/AdminContext.tsx'
 import Dashboard from './Components/Dashboard.tsx'
 // import Table from './Components/Table.tsx'
 import Transaction from './Transaction.tsx'
-import DeleteBook from './Components/DeleteBook.tsx'
+import DeleteBook, { getAllBook } from './Components/DeleteBook.tsx'
 import Table from './Components/Table.tsx'
+import ReducerBook from './Components/ReducerBook.tsx'
+import ManageBook from './ManageBook.tsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements([
@@ -19,8 +21,8 @@ const router = createBrowserRouter(
       {/* Book Routes */}
       <Route path='/book' element={<Dashboard />}/>
       <Route path='/book/add' element={<AddBook />} />
-      <Route path='/book/delete' element={<DeleteBook />} />
-      <Route path='/book/table' element={<Table />} />
+      <Route path='/book/remove' element={<DeleteBook />} loader={getAllBook} />
+      <Route path='/book/manage' element={<ManageBook />} />
 
       {/* Transaction Routes */}
       <Route path='/transaction' element={<Transaction />} />
@@ -28,7 +30,7 @@ const router = createBrowserRouter(
       <Route path='/transaction/return' element={<Transaction />} />
 
 
-      <Route path='/dashboard' element={<h1>ini dashboard</h1>} />
+      <Route path='/reducer' element={<ReducerBook />} />
     </Route>
   ])
 )
