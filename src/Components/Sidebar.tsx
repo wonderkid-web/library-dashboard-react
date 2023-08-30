@@ -51,8 +51,12 @@ const Sidebar = () => {
               <details>
                 <summary><GiNotebook />Transaction Section</summary>
                 <ul>
-                  <li><a>Loan Transaction</a></li>
-                  <li><a>Return Transaction</a></li>
+                  <li>
+                    <Link to={'/transaction/loan'}>Loan Transaction</Link>
+                  </li>
+                  <li>
+                    <Link to={'/transaction/return'}>Return Transaction</Link>
+                  </li>
                 </ul>
               </details>
             </li>

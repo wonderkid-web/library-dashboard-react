@@ -22,10 +22,7 @@ interface DeletedBook {
 const DeleteBook = () => {
 
   const books: DeletedBook = useLoaderData()
-
-  console.log(books)
-
-
+  
 
   return (
     // <div className="overflow-x-auto rounded-md col-span-2 bg-white">
@@ -90,7 +87,7 @@ const DeleteBook = () => {
     //   </table>
     // </div>
     <div className="overflow-x-auto rounded-md col-span-2 bg-white p-2 row-span-2">
-      <Table columns={deleteBook} datas={books.data} />
+      <Table columns={deleteBook} datas={books.data}  />
     </div>
   )
 }

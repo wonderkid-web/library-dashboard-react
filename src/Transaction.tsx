@@ -4,7 +4,7 @@ const Transaction = () => {
   return (
         <>
         <h1>Hallo From Transaction</h1>
-        <Table />
+
         </>
   )
 }

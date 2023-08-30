@@ -1,0 +1,110 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
+import { useMemo, useState } from "react"
+// import fakeData from "../assets/MOCK_DATA.json"
+
+
+const TableTransactionReturn = ({ columns, datas }: any) => {
+
+    const queryClient = useQueryClient();
+
+    const [sorting, setSorting] = useState([])
+    const [filtering, setFiltering] = useState('')
+    const [success, setSuccess] = useState(false)
+    const [error, setError] = useState(false)
+
+    const data = useMemo(() => datas, [datas])
+
+
+    const table = useReactTable({
+        data: data,
+        columns: columns,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+
+        state: {
+            sorting: sorting,
+            globalFilter: filtering
+        },
+
+        onSortingChange: setSorting,
+        onGlobalFilterChange: setFiltering
+
+    })
+
+
+    return (
+        <div className="table col-start-2 col-span-3 row-span-2">
+            <input type="text" onChange={e => setFiltering(e.target.value)} placeholder="Search at here!" className="p-1 bg-base-200 rounded-md ml-[110px] p-2 w-[200px] border-2 border-base-200" />
+            <table className="table-zebra mx-auto">
+                <thead className="text-center">
+                    {
+                        table.getHeaderGroups().map(headerGroup => (
+                            <tr key={headerGroup.id} id={headerGroup.id}>
+                                {
+                                    headerGroup.headers.map(header => (
+                                        <th key={header.index} id={header.id} onClick={header.column.getToggleSortingHandler()}>
+                                            {
+                                                flexRender(header.column.columnDef.header, header.getContext())
+                                            }
+                                        </th>
+                                    ))
+                                }
+                            </tr>
+                        ))
+                    }
+                </thead>
+                <tbody>
+                    {
+                        table.getRowModel().rows.map(row => (
+                            <tr key={row.id} id={row.id}>
+                                {
+                                    row.getVisibleCells().map((cell) => (
+                                        <td key={cell.id}>
+                                            {
+                                                flexRender(
+                                                    cell.column.columnDef.cell, cell.getContext()
+                                                )
+                                            }
+                                        </td>
+                                    ))
+                                }
+                            </tr>
+                        ))
+                    }
+                </tbody>
+            </table>
+            <div className="btn-group bg-sky-500 mt-2 w-full flex justify-center">
+                <button className="btn btn-active" onClick={() => table.setPageIndex(0)}>first page</button>
+                <button disabled={!table.getCanPreviousPage()} className="btn" onClick={() => table.previousPage()}>previous page</button>
+                <button disabled={!table.getCanNextPage()} className="btn" onClick={() => table.nextPage()}>next page</button>
+                <button className="btn" onClick={() => table.setPageIndex(table.getPageCount() - 1)}>last page</button>
+            </div>
+            {
+                success && (
+                    <div className="toast toast-start">
+                        <div className="alert alert-success">
+                            <span>Kamu berhasil menghapus Buku.</span>
+                        </div>
+                    </div>
+                )
+            }
+            {error && (
+                <div className="toast toast-start">
+                    <div className="alert alert-info">
+                        <span>Kamu gagal menghapus Buku.</span>
+                    </div>
+                </div>
+            )
+            }
+        </div>
+    )
+
+
+
+
+
+}
+export default TableTransactionReturn
