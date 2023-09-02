@@ -86,7 +86,7 @@ const Dashboard = () => {
                         </div>
                         <div className="stat-title">Loan</div>
                         <div className="stat-value">{data.loan}</div>
-                        <div className="stat-desc">Jan 1st - Feb 1st</div>
+                        <div className="stat-desc">Jan 1st - {moment(data.last_loaning.borrow_at).format('Do MMM')}</div>
                     </div>
                     <div className="stat bg-white rounded-md">
                         <div className="stat-figure text-secondary">
@@ -94,7 +94,7 @@ const Dashboard = () => {
                         </div>
                         <div className="stat-title">Return</div>
                         <div className="stat-value">{data.return}</div>
-                        <div className="stat-desc">Jan 1st - Feb 1st</div>
+                        <div className="stat-desc">Jan 1st - {moment(data.last_returning.return_at).format('Do MMM')}</div>
                     </div>
                 </div>
 

@@ -4,8 +4,12 @@ import Table from "./Table"
 import { set } from "firebase/database"
 
 const AddBook = () => {
+  const formData = new FormData()
+
+  const [src, setSrc] = useState(null)
   const [success, setSuccess] = useState()
   const [error, setError] = useState()
+  const [image, setImage] = useState(null)
   // const [imgUrl, setImgUrl] = useState("https://thumb7.shutterstock.com/image-photo/redirected-150nw-1727544364.jpg")
   // const [file, setFile] = useState()
   // const [fileName, setFileName] = useState()
@@ -43,7 +47,7 @@ const AddBook = () => {
     if (action.type === "input-active") {
       return {
         ...state,
-        [action.input.name]: action.input.value
+        [action.input.name]: action.input.value,
       }
     } else if (action.type === "clear") {
       return {}
@@ -57,6 +61,11 @@ const AddBook = () => {
         ...state,
         fail: action.payload
       }
+    } else if (action.type === 'image') {
+      return {
+        ...state,
+        [action.image.name]: action.image.file
+      }
     }
   }
 
@@ -66,7 +75,19 @@ const AddBook = () => {
   const [state, dispatch] = useReducer(reducer, initialVal)
 
 
+  const handleImage = (e: any) => {
+
+    dispatch({
+      type: "image",
+      image: {
+        name: e.target.name,
+        file: e.currentTarget.files[0]
+      }
+    })
+  }
+
   const handleChange = (e: any) => {
+
     dispatch({
       type: "input-active",
       input: {
@@ -78,31 +99,44 @@ const AddBook = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault()
-    form.current.reset()
-    const data = await fetch('http://localhost:3006/addBook', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        data: state
+    formData.append('image', state.image)
+    formData.append('bookId', state.bookId)
+
+    const fetcher = await Promise.all([
+      fetch('http://localhost:3006/addImage', {
+        method: 'POST',
+        body: formData
+      }),
+
+      fetch('http://localhost:3006/addBook', {
+        method: 'POST',
+        headers:{
+          "Content-Type" : "application/json"
+        },
+        body: JSON.stringify({
+          data: state
+        })
       })
-    })
+    ])
+
+
     dispatch({
       type: 'clear'
     })
+    form.current.reset()
 
-    if (data.ok) {
-      setSuccess(true)
-      setTimeout(()=>{
-        setSuccess(false)
-      },3000)
-    } else {
-      setError(true)
-      setTimeout(()=>{
-        setError(false)
-      },3000)
-    }
+
+    // if (data.ok) {
+    //   setSuccess(true)
+    //   setTimeout(()=>{
+    //     setSuccess(false)
+    //   },3000)
+    // } else {
+    //   setError(true)
+    //   setTimeout(()=>{
+    //     setError(false)
+    //   },3000)
+    // }
 
   }
 
@@ -118,6 +152,25 @@ const AddBook = () => {
 
   return (
     <div className="col-span-2 row-span-2 ">
+
+      <button onClick={async() =>{
+        const data = await fetch('http://localhost:3006/image',{
+          method: 'POST',
+          headers:{
+            "Content-Type" : "application/json"
+          },
+          body: JSON.stringify({
+            bookId: state.bookId
+          })
+        })
+        const {path} = await data.json()
+        const imagePath = `http://localhost:3006/images/${path.path}`
+        setSrc(imagePath)
+        // setSrc(data)
+
+      }}>getSrc</button>
+
+     {src && <img src={src} alt="" />}
 
       {/* <img src={imgUrl} alt="" />
       <input onChange={(e) => handleInputFile(e)} type="file" />
@@ -224,10 +277,10 @@ const AddBook = () => {
                 </label>
                 <div className="mt-2">
                   <input
-                    type="text"
+                    type="file"
                     name="image"
                     id="image"
-                    onChange={handleChange}
+                    onChange={handleImage}
                     autoComplete="address-level1"
                     className="p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
@@ -253,7 +306,6 @@ const AddBook = () => {
                   </select>
                 </div>
               </div>
-
             </div>
 
 
