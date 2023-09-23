@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
-import { useMemo, useState } from "react"
+import { Fragment, useMemo, useState } from "react"
 import moment from "moment"
 // import fakeData from "../assets/MOCK_DATA.json"
 
@@ -56,7 +56,7 @@ const TableTransaction = ({ columns, datas, tipe }: any) => {
   })
 
 
-  if(datas){
+  if (datas) {
     if (tipe == 'loan') {
       return (
         <div className="table col-start-2 col-span-3 row-span-2">
@@ -84,29 +84,35 @@ const TableTransaction = ({ columns, datas, tipe }: any) => {
                 table.getRowModel().rows.map(row => (
                   <tr key={row.id} id={row.id}>
                     {
-                      row.getVisibleCells().map((cell, i) => (
-                        <>
-                          {
-                            i !== 6 ? (
-                              <td key={cell.id}>
-                                {
-                                  flexRender(
+                      row.getVisibleCells().map((cell, i) => {
+                        return (
+                          <Fragment key={cell.id}>
+                            {i !== 6 ?
+                              i == 2 ? (
+                                <td key={cell.id}>
+                                  { cell.row.original.books && cell.row.original.books[0]?.title}
+                                </td>
+                              ) : (
+                                <td key={cell.id}>
+                                  {flexRender(
                                     cell.column.columnDef.cell, cell.getContext()
-                                  )
-                                }
-                              </td>
-                            ) :
-                              (
-                                <td key={cell.id} onClick={() => mutate({
-                                  idLoan: cell.row.original.id,
-                                  idBook: cell.row.original.books[0].id
-                                })} className="cursor-pointer">
-                                  delete
+                                  )}
                                 </td>
                               )
-                          }
-                        </>
-                      ))
+                              :
+                              (
+                                <td key={cell.id} onClick={() => {
+                                  mutate({
+                                    idLoan: cell.row.original.id,
+                                    idBook: cell.row.original.books && cell.row.original.books[0].id
+                                  })
+                                } }>
+                                  <button disabled={!cell.row.original.status} className={cell.row.original.status ? `text-white bg-green-400 w-fit h-fit p-1 rounded` : `text-white bg-gray-400 w-fit h-fit p-1 rounded`}>Done</button>
+                                </td>
+                              )}
+                          </Fragment>
+                        )
+                      })
                     }
                   </tr>
                 ))
@@ -137,7 +143,7 @@ const TableTransaction = ({ columns, datas, tipe }: any) => {
           )
           }
         </div>
-  
+
       )
     } else {
       return (
@@ -167,7 +173,7 @@ const TableTransaction = ({ columns, datas, tipe }: any) => {
                   <tr key={row.id} id={row.id}>
                     {
                       row.getVisibleCells().map((cell, id) => (
-                        id != 1 ? 
+                        id != 1 ?
                           id != 2 ? (
                             <td key={cell.id}>
                               {
@@ -179,19 +185,19 @@ const TableTransaction = ({ columns, datas, tipe }: any) => {
                           ) : (
                             <td key={cell.id}>
                               {
-                               moment( flexRender(
-                                cell.column.columnDef.cell, cell.getContext()
-                              )).format('LLLL')
+                                moment(flexRender(
+                                  cell.column.columnDef.cell, cell.getContext()
+                                )).format('LLLL')
                               }
                             </td>
-                          ) 
+                          )
                           : (
-                          <td key={cell.id}>
+                            <td key={cell.id}>
                               {
                                 cell.row.original?.loan?.length > 0 && cell.row.original?.loan[0]?.name
                               }
-                          </td>
-                        )
+                            </td>
+                          )
                       ))
                     }
                   </tr>

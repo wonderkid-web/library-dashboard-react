@@ -68,6 +68,10 @@
     accessorKey:"name",
   },
   {
+    header: "title",
+    accessorKey: "title"
+  },
+  {
     header:"borrow_at",
     accessorKey:"borrow_at",
   },

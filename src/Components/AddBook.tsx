@@ -2,6 +2,8 @@ import { useEffect, useId, useReducer, useRef, useState } from "react"
 import { useAdminContext } from "../context/AdminContext"
 import Table from "./Table"
 import { set } from "firebase/database"
+import moment from "moment"
+
 
 const AddBook = () => {
   const formData = new FormData()
@@ -98,11 +100,13 @@ const AddBook = () => {
   }
 
   const handleSubmit = async (e: any) => {
+    const date = new Date()
     e.preventDefault()
-    formData.append('image', state.image)
-    formData.append('bookId', state.bookId)
 
-    const fetcher = await Promise.all([
+    formData.append('image', state.image, `${date.getTime()}-${state.image.name}`)
+  
+    console.log(formData.get('image'))
+    const [addImage, addBook] = await Promise.all([
       fetch('http://localhost:3006/addImage', {
         method: 'POST',
         body: formData
@@ -114,7 +118,7 @@ const AddBook = () => {
           "Content-Type" : "application/json"
         },
         body: JSON.stringify({
-          data: state
+          data: {...state, cover: `${date.getTime()}-${state.image.name}`}
         })
       })
     ])
@@ -126,17 +130,17 @@ const AddBook = () => {
     form.current.reset()
 
 
-    // if (data.ok) {
-    //   setSuccess(true)
-    //   setTimeout(()=>{
-    //     setSuccess(false)
-    //   },3000)
-    // } else {
-    //   setError(true)
-    //   setTimeout(()=>{
-    //     setError(false)
-    //   },3000)
-    // }
+    if (addBook.ok, addImage.ok) {
+      setSuccess(true)
+      setTimeout(()=>{
+        setSuccess(false)
+      },3000)
+    } else {
+      setError(true)
+      setTimeout(()=>{
+        setError(false)
+      },3000)
+    }
 
   }
 

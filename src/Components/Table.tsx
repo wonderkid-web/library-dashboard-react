@@ -1,5 +1,5 @@
 import { flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table"
-import { useMemo, useState } from "react"
+import { Fragment, useMemo, useState } from "react"
 // import fakeData from "../assets/MOCK_DATA.json"
 
 
@@ -75,7 +75,7 @@ const Table = ({ columns, datas }: any) => {
               <tr key={row.id} id={row.id}>
                 {
                   row.getVisibleCells().map((cell, i) => (
-                    <>
+                    <Fragment key={cell.id}>
                       {
                         i !== 6 ? (
                           <td key={cell.id}>
@@ -87,12 +87,12 @@ const Table = ({ columns, datas }: any) => {
                           </td>
                         ) :
                           (
-                            <td key={cell.id} onClick={() => handleDelete(cell.row.original.id)} className="cursor-pointer">
-                              delete
+                            <td key={cell.id}>
+                              <button className="cursor-pointer bg-red-400 text-white p-2 rounded-md" onClick={()=>handleDelete(cell.row.original.id)}>delete</button>
                             </td>
                           )
                       }
-                    </>
+                    </Fragment>
                   ))
                 }
               </tr>
