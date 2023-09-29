@@ -88,7 +88,8 @@
     accessorKey:"status",
   },
   {
-    header:" "
+    header:"note",
+    accessorKey: "",
   }
 ]
 

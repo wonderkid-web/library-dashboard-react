@@ -37,7 +37,7 @@ const TableTransaction = ({ columns, datas, tipe }: any) => {
 
   const { mutate } = useMutation({
     mutationFn: async (object) => {
-      const { idLoan, idBook } = object
+      const { idLoan, idBook } : any = object
       const data = await fetch(`http://localhost:3006/change-status`, {
         method: 'POST',
         headers: {
@@ -50,6 +50,26 @@ const TableTransaction = ({ columns, datas, tipe }: any) => {
       return data
     },
     mutationKey: ['status'],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['loan'] })
+    }
+  })
+
+  const { mutate:note } = useMutation({
+    mutationFn: async (object) => {
+      const { idLoan, noteType } = object
+      const data = await fetch(`http://localhost:3006/change-note`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          idLoan, noteType
+        })
+      })
+      return data
+    },
+    mutationKey: ['loan'],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['loan'] })
     }
@@ -68,11 +88,19 @@ const TableTransaction = ({ columns, datas, tipe }: any) => {
                   <tr key={headerGroup.id} id={headerGroup.id}>
                     {
                       headerGroup.headers.map(header => (
-                        <th key={header.index} id={header.id} onClick={header.column.getToggleSortingHandler()}>
+                        header.column.columnDef.header !== "note" ? (
+                          <th className="w-25" key={header.index} id={header.id} onClick={header.column.getToggleSortingHandler()}>
+                          {
+                            flexRender(header.column.columnDef.header, header.getContext())
+                          }
+                        </th> 
+                        ): (
+                          <th className="w-[150px]" key={header.index} id={header.id} onClick={header.column.getToggleSortingHandler()}>
                           {
                             flexRender(header.column.columnDef.header, header.getContext())
                           }
                         </th>
+                        )
                       ))
                     }
                   </tr>
@@ -87,10 +115,21 @@ const TableTransaction = ({ columns, datas, tipe }: any) => {
                       row.getVisibleCells().map((cell, i) => {
                         return (
                           <Fragment key={cell.id}>
-                            {i !== 6 ?
-                              i == 2 ? (
-                                <td key={cell.id}>
-                                  { cell.row.original.books && cell.row.original.books[0]?.title}
+                            {cell.column.columnDef.header !== "status" ?
+                              cell.column.columnDef.header === "note" ? (
+                                <td className="text-center grid grid-cols-2  gap-2 text-teal-900">
+                                  <button onClick={()=>{note({
+                                    idLoan: cell.row.original.id, noteType: null
+                                  })}} className="p-1 rounded-md bg-blue-200">Lunas</button>
+                                  <button onClick={()=>{note({
+                                    idLoan: cell.row.original.id, noteType: 'Denda'
+                                  })}} className="p-1 rounded-md bg-orange-200">Denda</button>
+                                  <button onClick={()=>{note({
+                                    idLoan: cell.row.original.id, noteType: 'Rusak'
+                                  })}} className="p-1 rounded-md bg-yellow-200">Rusak</button>
+                                  <button onClick={()=>{note({
+                                    idLoan: cell.row.original.id, noteType: 'Hilang'
+                                  })}} className="p-1 rounded-md bg-red-200">Hilang</button>
                                 </td>
                               ) : (
                                 <td key={cell.id}>
@@ -147,7 +186,7 @@ const TableTransaction = ({ columns, datas, tipe }: any) => {
       )
     } else {
       return (
-        <div className="table col-start-2 col-span-3 row-span-2">
+        <div className="overflow-x-auto col-start-2 col-span-3 row-span-2">
           <input type="text" onChange={e => setFiltering(e.target.value)} placeholder="Search at here!" className="p-1 bg-base-200 rounded-md ml-[110px] p-2 w-[200px] border-2 border-base-200" />
           <table className="table-zebra mx-auto">
             <thead className="text-center">

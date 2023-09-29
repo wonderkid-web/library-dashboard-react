@@ -20,7 +20,7 @@ const Loan = () => {
             return remakeLoan
         },
         queryKey: ['loan'],
-        refetchInterval: 1500
+        staleTime: 1000
     })
     
 

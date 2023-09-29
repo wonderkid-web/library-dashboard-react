@@ -12,8 +12,8 @@ const Return = () => {
       const data = await raw.json()
       return data.return
     },
-    queryKey: ['loan'],
-    refetchInterval: 1500
+    queryKey: ['return'],
+    refetchInterval: 1000
   })
 
 

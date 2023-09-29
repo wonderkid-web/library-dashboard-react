@@ -1,17 +1,9 @@
-import { useEffect, useId, useReducer, useRef, useState } from "react"
-import { useAdminContext } from "../context/AdminContext"
-import Table from "./Table"
-import { set } from "firebase/database"
-import moment from "moment"
-
+import {useReducer, useRef, useState } from "react"
 
 const AddBook = () => {
   const formData = new FormData()
-
-  const [src, setSrc] = useState(null)
   const [success, setSuccess] = useState()
   const [error, setError] = useState()
-  const [image, setImage] = useState(null)
   // const [imgUrl, setImgUrl] = useState("https://thumb7.shutterstock.com/image-photo/redirected-150nw-1727544364.jpg")
   // const [file, setFile] = useState()
   // const [fileName, setFileName] = useState()
@@ -103,8 +95,10 @@ const AddBook = () => {
     const date = new Date()
     e.preventDefault()
 
+
+    // formData.append('bookId', state.bookId)
     formData.append('image', state.image, `${date.getTime()}-${state.image.name}`)
-  
+
     console.log(formData.get('image'))
     const [addImage, addBook] = await Promise.all([
       fetch('http://localhost:3006/addImage', {
@@ -127,19 +121,21 @@ const AddBook = () => {
     dispatch({
       type: 'clear'
     })
-    form.current.reset()
-
+    
+    if(form.current){
+      form.current.reset()
+    }
 
     if (addBook.ok, addImage.ok) {
       setSuccess(true)
-      setTimeout(()=>{
+      setTimeout(() => {
         setSuccess(false)
-      },3000)
+      }, 3000)
     } else {
       setError(true)
-      setTimeout(()=>{
+      setTimeout(() => {
         setError(false)
-      },3000)
+      }, 3000)
     }
 
   }
@@ -157,45 +153,7 @@ const AddBook = () => {
   return (
     <div className="col-span-2 row-span-2 ">
 
-      <button onClick={async() =>{
-        const data = await fetch('http://localhost:3006/image',{
-          method: 'POST',
-          headers:{
-            "Content-Type" : "application/json"
-          },
-          body: JSON.stringify({
-            bookId: state.bookId
-          })
-        })
-        const {path} = await data.json()
-        const imagePath = `http://localhost:3006/images/${path.path}`
-        setSrc(imagePath)
-        // setSrc(data)
-
-      }}>getSrc</button>
-
-     {src && <img src={src} alt="" />}
-
-      {/* <img src={imgUrl} alt="" />
-      <input onChange={(e) => handleInputFile(e)} type="file" />
-      <br />
-      <button disabled={loading ? true : false} onClick={() => {
-        uploadCover(file, setImgUrl, setLoading, fileName)
-
-      }} className="btn btn-info m-4 mx-auto">Create!</button>
-
-      <button className="btn btn-warning" onClick={async () => {
-        // console.log(fileName);
-
-        const { photoURL } = await getCoverUrlImg(fileName)
-        // console.log(photoURL);
-        // console.log(fileName);
-
-        setCoverUrl(photoURL)
-      }}>Get URL</button>
-      <img src={coverUrl} alt="" /> */}
-
-      <form onSubmit={handleSubmit} ref={form}>
+      <form onSubmit={(e)=>handleSubmit(e)} ref={form}>
         <div className="space-y-12 w-1/2 mx-auto">
           <div className="border-b border-gray-900/10 pb-12">
             {/* HEADER */}
@@ -284,7 +242,9 @@ const AddBook = () => {
                     type="file"
                     name="image"
                     id="image"
-                    onChange={handleImage}
+                    onChange={
+                      handleImage
+                    }
                     autoComplete="address-level1"
                     className="p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
